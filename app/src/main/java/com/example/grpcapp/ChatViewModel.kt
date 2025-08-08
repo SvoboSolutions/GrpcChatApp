@@ -2,13 +2,10 @@ package com.example.grpcapp
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.grpcapp.com.example.grpcapp.ChatClient
-import com.example.grpcapp.proto.ChatProto.ChatMessage
+import com.example.grpc.chat.ChatMessage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
 
 data class ChatUiState(
     val messages: List<ChatMessage> = emptyList(),
@@ -26,19 +23,25 @@ class ChatViewModel : ViewModel() {
     fun connectToChat(username: String) {
         viewModelScope.launch {
             try {
+                println("🔄 Versuche Verbindung zu Spring Boot Server...")
                 chatClient.connect("192.168.2.107", 9090) // Für Emulator
+                println("✅ Verbindung zu Spring Boot erfolgreich")
+
                 _uiState.value = _uiState.value.copy(
                     username = username,
                     isConnected = true
                 )
 
-                // Chat-Stream starten
+                println("🔄 Trete Chat bei...")
                 chatClient.joinChat(username).collect { message ->
+                    println("📥 Nachricht erhalten: ${message.username}: ${message.message}")
                     val currentMessages = _uiState.value.messages.toMutableList()
                     currentMessages.add(message)
                     _uiState.value = _uiState.value.copy(messages = currentMessages)
                 }
             } catch (e: Exception) {
+                println("❌ Verbindungsfehler: ${e.message}")
+                e.printStackTrace()
                 _uiState.value = _uiState.value.copy(isConnected = false)
             }
         }

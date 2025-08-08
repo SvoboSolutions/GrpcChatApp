@@ -19,6 +19,10 @@ import com.example.grpcapp.ui.theme.GrpcAppTheme
 import java.text.SimpleDateFormat
 import java.util.*
 
+import com.example.grpc.chat.ChatMessage
+import com.example.grpc.chat.ChatServiceGrpc
+import com.example.grpc.chat.UserInfo
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -150,7 +154,7 @@ fun ChatScreen(viewModel: ChatViewModel) {
 }
 
 @Composable
-fun MessageItem(message: com.example.grpcapp.proto.ChatProto.ChatMessage, isOwnMessage: Boolean) {
+fun MessageItem(message: ChatMessage, isOwnMessage: Boolean) {
     val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val time = timeFormat.format(Date(message.timestamp))
 
